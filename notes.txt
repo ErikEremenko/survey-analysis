@@ -1,0 +1,1 @@
+time	sex	I int pol	i think surrounding	i int elec	i int gov	i int news	th pol act + inf	th let pol	elec tom
