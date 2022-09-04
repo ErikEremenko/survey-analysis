@@ -543,4 +543,4 @@ print('Spearmans correlation: %.3f' % corr)
 
 # print(GetResponses(filenames, "(9) Politische Bildung.csv"))
 
-print(GetGroupScores(filenames, "(11) Politische Bildung.csv"))
+# print(GetGroupScores(filenames, "(11) Politische Bildung.csv"))
