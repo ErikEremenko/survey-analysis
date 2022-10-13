@@ -1,7 +1,10 @@
-from scipy.stats import pearsonr, spearmanr
+from scipy.stats import pearsonr, spearmanr, kendalltau
+import scipy.stats as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+import seaborn as sns
+from statsmodels.stats.weightstats import ttest_ind
 
 filenames = ["(8) Politische Bildung.csv", "(9) Politische Bildung.csv",
              "(10) Politische Bildung.csv", "(11) Politische Bildung.csv"]
@@ -9,7 +12,7 @@ filenames = ["(8) Politische Bildung.csv", "(9) Politische Bildung.csv",
 grades = [8, 9, 10, 11]
 
 
-#txt_file = open("results.txt", "a")
+# txt_file = open("results.txt", "a")
 
 filename1 = "surveys.csv"
 
@@ -90,7 +93,7 @@ def GetResponses(f, c):
 
             response_list = []
             for i, j in df.iterrows():
-                #print("\nparticipant", i+1, ":")
+                # print("\nparticipant", i+1, ":")
                 individual_responses = []
                 for n in range(24):
                     # print(j[2+n])
@@ -105,7 +108,7 @@ def GetResponses(f, c):
 
             response_list = []
             for i, j in df.iterrows():
-                #print("\nparticipant", i+1, ":")
+                # print("\nparticipant", i+1, ":")
                 individual_responses = []
                 for n in range(24):
                     # print(j[2+n])
@@ -133,13 +136,13 @@ def GetInterest(f, c):
 
         t = 0
         for e in ind_int:
-            t += int(e)
-        sums_int.append(t)
+            t += int(e-1)
+        sums_int.append(t/32)
 
     return(sums_int)
     # print(sums_int)
 
-#GetInterest(filenames, "(11) Politische Bildung.csv")
+# GetInterest(filenames, "(11) Politische Bildung.csv")
 
 
 # GetResponses(filenames, "(11) Politische Bildung.csv")
@@ -147,7 +150,7 @@ def GetInterest(f, c):
 # print(surveys_df.shape[0])
 # print(surveys_df.shape[1])
 
-#print("\nTotal: ", response_list)
+# print("\nTotal: ", response_list)
 
 # print(response_list[0:len(response_list)])
 
@@ -318,7 +321,7 @@ scores = []
 #     scores.append(ind_score)
 
 # print(individual_response)
-#print("sum=", ind_score)
+# print("sum=", ind_score)
 
 # with open("ergebnisse.txt", "w") as f:
 
@@ -331,7 +334,7 @@ scores = []
 #     # f.write("sum="+ str(ind_score))
 #     print("sum="+ str(ind_score))
 
-#print("\n", scores)
+# print("\n", scores)
 
 
 def GetGroupScores(f, c):
@@ -485,14 +488,15 @@ def GetGroupScores(f, c):
 
 
 fig = plt.figure()
-plt.boxplot(scores)
+plt.boxplot(GetInterest(filenames, "(11) Politische Bildung.csv"))
 
-plt.ylim([-20, 55])
-plt.yticks(range(-20, 55, 5))  # Y ticks every 50.  You can provide any list.
+plt.ylim([0, 1])
+# plt.yticks(range(-20, 55, 5))  # Y ticks every 50.  You can provide any list.
 plt.plot([0.5, 1.5], [15, 15], 'k-', lw=1)
 
+plt.ylabel('IP', fontsize=14)
 
-fig.suptitle('Klassenstufe 8', fontsize=14)
+fig.suptitle('Klassenstufe 11', fontsize=18)
 
 # plt.show()
 
@@ -503,23 +507,26 @@ fig.suptitle('Klassenstufe 8', fontsize=14)
 # calculate Pearson's correlation
 
 
-# corr, _ = pearsonr(GetInterest(filenames, "(8) Politische Bildung.csv"),
-#                    GetGroupScores(filenames, "(8) Politische Bildung.csv"))
-# print('Pearsons correlation: %.3f' % corr)
+corr, _ = pearsonr(GetInterest(filenames, "(8) Politische Bildung.csv"),
+                   GetGroupScores(filenames, "(8) Politische Bildung.csv"))
+print('Pearsons correlation: %.3f' % corr)
 
-# corr, _ = pearsonr(GetInterest(filenames, "(9) Politische Bildung.csv"),
-#                    GetGroupScores(filenames, "(9) Politische Bildung.csv"))
-# print('Pearsons correlation: %.3f' % corr)
+corr, _ = pearsonr(GetInterest(filenames, "(9) Politische Bildung.csv"),
+                   GetGroupScores(filenames, "(9) Politische Bildung.csv"))
+print('Pearsons correlation: %.3f' % corr)
 
-# corr, _ = pearsonr(GetInterest(filenames, "(10) Politische Bildung.csv"),
-#                    GetGroupScores(filenames, "(10) Politische Bildung.csv"))
-# print('Pearsons correlation: %.3f' % corr)
+corr, _ = pearsonr(GetInterest(filenames, "(10) Politische Bildung.csv"),
+                   GetGroupScores(filenames, "(10) Politische Bildung.csv"))
+print('Pearsons correlation: %.3f' % corr)
 
 
-# corr, _ = pearsonr(GetInterest(filenames, "(11) Politische Bildung.csv"),
-#                    GetGroupScores(filenames, "(11) Politische Bildung.csv"))
-# print('Pearsons correlation: %.3f' % corr)
+corr, _ = pearsonr(GetInterest(filenames, "(11) Politische Bildung.csv"),
+                   GetGroupScores(filenames, "(11) Politische Bildung.csv"))
+print('Pearsons correlation: %.3f' % corr)
 
+# corr, _ = kendalltau(GetInterest(filenames, "(11) Politische Bildung.csv"),
+#                      GetGroupScores(filenames, "(11) Politische Bildung.csv"))
+# print('Kendalls correlation: %.3f' % corr)
 
 # corr, _ = spearmanr(GetInterest(filenames, "(8) Politische Bildung.csv"),
 #                     GetGroupScores(filenames, "(8) Politische Bildung.csv"))
@@ -533,9 +540,9 @@ fig.suptitle('Klassenstufe 8', fontsize=14)
 #                     GetGroupScores(filenames, "(10) Politische Bildung.csv"))
 # print('Spearmans correlation: %.3f' % corr)
 
-corr, _ = spearmanr(GetInterest(filenames, "(11) Politische Bildung.csv"),
-                    GetGroupScores(filenames, "(11) Politische Bildung.csv"))
-print('Spearmans correlation: %.3f' % corr)
+# corr, _ = spearmanr(GetInterest(filenames, "(11) Politische Bildung.csv"),
+#                     GetGroupScores(filenames, "(11) Politische Bildung.csv"))
+# print('Spearmans correlation: %.3f' % corr)
 
 
 # print(len(scores))
@@ -544,3 +551,79 @@ print('Spearmans correlation: %.3f' % corr)
 # print(GetResponses(filenames, "(9) Politische Bildung.csv"))
 
 # print(GetGroupScores(filenames, "(11) Politische Bildung.csv"))
+
+
+n = 0
+u = 0
+for i in (GetInterest(filenames, "(11) Politische Bildung.csv")):
+    n += 1
+    u += i
+
+print(u / n)
+
+# print(GetInterest(filenames, "(10) Politische Bildung.csv"))
+
+
+# print(np.corrcoef(GetInterest(filenames, "(11) Politische Bildung.csv"),
+#                   GetGroupScores(filenames, "(11) Politische Bildung.csv")))
+
+
+fig = plt.figure()
+
+plt.scatter(GetInterest(filenames, "(11) Politische Bildung.csv"),
+            GetGroupScores(filenames, "(11) Politische Bildung.csv"))
+
+fig.suptitle('K11: Verteilung PB, IP', fontsize=20)
+plt.xlabel('IP', fontsize=18)
+plt.ylabel('PB', fontsize=18)
+plt.xlim(0, 1)
+
+# fig.savefig('K11 PB in Abhängigkeit vom IP')
+
+# plt.show()
+
+
+# tval, _ = ttest_ind(GetInterest(filenames, "(11) Politische Bildung.csv"),
+#                     GetGroupScores(filenames, "(11) Politische Bildung.csv"))
+# print('T-Value: %.3f' % corr)
+
+print(GetInterest(filenames, "(11) Politische Bildung.csv"))
+print(GetGroupScores(filenames, "(11) Politische Bildung.csv"))
+
+totalint = []
+
+for i in GetInterest(filenames, "(8) Politische Bildung.csv"):
+    totalint.append(i)
+for i in GetInterest(filenames, "(9) Politische Bildung.csv"):
+    totalint.append(i)
+for i in GetInterest(filenames, "(10) Politische Bildung.csv"):
+    totalint.append(i)
+for i in GetInterest(filenames, "(11) Politische Bildung.csv"):
+    totalint.append(i)
+
+
+print(totalint)
+print(len(totalint))
+
+totalscores = []
+
+for i in GetGroupScores(filenames, "(8) Politische Bildung.csv"):
+    totalscores.append(i)
+for i in GetGroupScores(filenames, "(9) Politische Bildung.csv"):
+    totalscores.append(i)
+for i in GetGroupScores(filenames, "(10) Politische Bildung.csv"):
+    totalscores.append(i)
+for i in GetGroupScores(filenames, "(11) Politische Bildung.csv"):
+    totalscores.append(i)
+
+print(totalscores)
+print(len(totalscores))
+
+
+corr, _ = pearsonr(totalint, totalscores)
+print('TOTAL Pearsons correlation: %.3f' % corr)
+
+print(GetInterest(filenames, "(8) Politische Bildung.csv"))
+print(GetInterest(filenames, "(9) Politische Bildung.csv"))
+print(GetInterest(filenames, "(10) Politische Bildung.csv"))
+print(GetInterest(filenames, "(11) Politische Bildung.csv"))
